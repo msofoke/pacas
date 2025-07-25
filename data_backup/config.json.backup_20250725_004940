@@ -1,0 +1,13 @@
+{
+  "profit_percentages": {
+    "premium": 80,
+    "regular": 50,
+    "economica": 30,
+    "rechazo": 0
+  },
+  "default_expenses": {
+    "transport": 0,
+    "cleaning": 0,
+    "other": 0
+  }
+}

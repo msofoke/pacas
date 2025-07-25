@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}{{ bundle.name }} - Gestión de Pacas{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2 mb-0">
+                <i class="bi bi-box-seam text-primary me-2"></i>{{ bundle.name }}
+            </h1>
+            <div class="btn-group">
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Volver
+                </a>
+                <a href="{{ url_for('edit_bundle', bundle_id=bundle.id) }}" class="btn btn-outline-primary">
+                    <i class="bi bi-pencil me-1"></i>Editar
+                </a>
+                <form method="POST" action="{{ url_for('delete_bundle', bundle_id=bundle.id) }}" class="d-inline" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta paca?')">
+                    <button type="submit" class="btn btn-outline-danger">
+                        <i class="bi bi-trash me-1"></i>Eliminar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card card-stats">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="flex-grow-1">
+                        <h5 class="card-title text-muted mb-0">Inversión Total</h5>
+                        <h2 class="text-primary mb-0">{{ format_currency(metrics.total_cost_with_expenses) }}</h2>
+                        <small class="text-muted">+ {{ format_currency(metrics.total_additional_expenses) }} gastos</small>
+                    </div>
+                    <div class="icon-wrapper bg-primary">
+                        <i class="bi bi-currency-dollar text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card card-stats">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="flex-grow-1">
+                        <h5 class="card-title text-muted mb-0">Costo por Pieza</h5>
+                        <h2 class="text-info mb-0">{{ format_currency(metrics.cost_per_piece) }}</h2>
+                        <small class="text-muted">{{ bundle.total_pieces }} piezas total</small>
+                    </div>
+                    <div class="icon-wrapper bg-info">
+                        <i class="bi bi-calculator text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card card-stats">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="flex-grow-1">
+                        <h5 class="card-title text-muted mb-0">Ganancia Estimada</h5>
+                        <h2 class="text-success mb-0">{{ format_currency(metrics.ideal_profit) }}</h2>
+                        <small class="text-muted">{{ "%.1f"|format(metrics.ideal_profit_margin) }}% margen</small>
+                    </div>
+                    <div class="icon-wrapper bg-success">
+                        <i class="bi bi-graph-up-arrow text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card card-stats">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="flex-grow-1">
+                        <h5 class="card-title text-muted mb-0">Ingresos Ideales</h5>
+                        <h2 class="text-warning mb-0">{{ format_currency(metrics.total_ideal_revenue) }}</h2>
+                        <small class="text-muted">vs {{ format_currency(metrics.total_minimum_revenue) }} mínimo</small>
+                    </div>
+                    <div class="icon-wrapper bg-warning">
+                        <i class="bi bi-cash-stack text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Bundle Information -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-info-circle me-2"></i>Información de la Paca
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label text-muted">Fecha de Creación</label>
+                    <p class="mb-0">{{ bundle.created_at[:19].replace('T', ' ') if bundle.created_at else 'N/A' }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted">Costo Original</label>
+                    <p class="mb-0 text-primary fw-bold">{{ format_currency(bundle.total_cost) }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted">Gastos Adicionales</label>
+                    <ul class="list-unstyled mb-0">
+                        <li><small>Transporte: {{ format_currency(bundle.additional_expenses.transport) }}</small></li>
+                        <li><small>Limpieza: {{ format_currency(bundle.additional_expenses.cleaning) }}</small></li>
+                        <li><small>Otros: {{ format_currency(bundle.additional_expenses.other) }}</small></li>
+                    </ul>
+                </div>
+                
+                <div class="mb-0">
+                    <label class="form-label text-muted">Total de Piezas</label>
+                    <p class="mb-0"><span class="badge bg-primary fs-6">{{ bundle.total_pieces }} piezas</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Classification by Type -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-person me-2"></i>Por Tipo de Prenda
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between">
+                        <span><i class="bi bi-person-fill text-primary me-1"></i>Hombre</span>
+                        <span class="badge bg-primary">{{ bundle.classification.by_type.hombre }}</span>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between">
+                        <span><i class="bi bi-person-dress text-danger me-1"></i>Mujer</span>
+                        <span class="badge bg-danger">{{ bundle.classification.by_type.mujer }}</span>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between">
+                        <span><i class="bi bi-person-hearts text-warning me-1"></i>Niños</span>
+                        <span class="badge bg-warning">{{ bundle.classification.by_type.ninos }}</span>
+                    </div>
+                </div>
+                <div class="mb-0">
+                    <div class="d-flex justify-content-between">
+                        <span><i class="bi bi-house text-success me-1"></i>Hogar</span>
+                        <span class="badge bg-success">{{ bundle.classification.by_type.hogar }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pricing Breakdown -->
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-calculator me-2"></i>Análisis de Precios por Calidad
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Calidad</th>
+                                <th>Piezas</th>
+                                <th>Margen</th>
+                                <th>Precio Mínimo</th>
+                                <th>Precio Ideal</th>
+                                <th>Ingresos Ideales</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in metrics.quality_breakdown %}
+                            <tr>
+                                <td>
+                                    {% if item.quality == 'premium' %}
+                                        <i class="bi bi-star-fill text-warning me-1"></i>Premium
+                                    {% elif item.quality == 'regular' %}
+                                        <i class="bi bi-circle-fill text-primary me-1"></i>Regular
+                                    {% elif item.quality == 'economica' %}
+                                        <i class="bi bi-circle text-success me-1"></i>Económica
+                                    {% else %}
+                                        <i class="bi bi-x-circle text-danger me-1"></i>Rechazo
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ item.pieces }}</span>
+                                </td>
+                                <td>
+                                    <span class="text-info">{{ item.profit_percentage }}%</span>
+                                </td>
+                                <td>
+                                    <span class="text-muted">{{ format_currency(item.minimum_price) }}</span>
+                                </td>
+                                <td>
+                                    <span class="text-success fw-bold">{{ format_currency(item.ideal_price) }}</span>
+                                </td>
+                                <td>
+                                    <span class="text-primary fw-bold">{{ format_currency(item.ideal_revenue) }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <th>Total</th>
+                                <th><span class="badge bg-primary">{{ bundle.total_pieces }}</span></th>
+                                <th>-</th>
+                                <th><span class="text-muted">{{ format_currency(metrics.total_minimum_revenue) }}</span></th>
+                                <th>-</th>
+                                <th><span class="text-success fw-bold">{{ format_currency(metrics.total_ideal_revenue) }}</span></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profit Analysis -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-graph-up me-2"></i>Análisis de Rentabilidad
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Escenario Mínimo (Recuperar Inversión)</h6>
+                        <ul class="list-unstyled">
+                            <li>Ingresos: <span class="text-info fw-bold">{{ format_currency(metrics.total_minimum_revenue) }}</span></li>
+                            <li>Ganancia: <span class="text-success">{{ format_currency(metrics.minimum_profit) }}</span></li>
+                            <li>Margen: <span class="text-muted">{{ format_percentage(metrics.minimum_profit_margin) }}</span></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Escenario Ideal (Con Márgenes)</h6>
+                        <ul class="list-unstyled">
+                            <li>Ingresos: <span class="text-info fw-bold">{{ format_currency(metrics.total_ideal_revenue) }}</span></li>
+                            <li>Ganancia: <span class="text-success fw-bold">{{ format_currency(metrics.ideal_profit) }}</span></li>
+                            <li>Margen: <span class="text-success fw-bold">{{ format_percentage(metrics.ideal_profit_margin) }}</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

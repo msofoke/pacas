@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Configuración - Gestión de Pacas{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2 mb-0">
+                <i class="bi bi-gear text-primary me-2"></i>Configuración
+            </h1>
+        </div>
+    </div>
+</div>
+
+<form method="POST">
+    <div class="row">
+        <!-- Profit Percentages -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-percent me-2"></i>Porcentajes de Ganancia
+                    </h5>
+                    <small class="text-muted">Configura el margen de ganancia por calidad de prenda</small>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="premium" class="form-label">
+                            <i class="bi bi-star-fill text-warning me-1"></i>Premium
+                        </label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="premium" name="premium" 
+                                   value="{{ config.profit_percentages.premium }}" step="0.1" min="0">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="regular" class="form-label">
+                            <i class="bi bi-circle-fill text-primary me-1"></i>Regular
+                        </label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="regular" name="regular" 
+                                   value="{{ config.profit_percentages.regular }}" step="0.1" min="0">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="economica" class="form-label">
+                            <i class="bi bi-circle text-success me-1"></i>Económica
+                        </label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="economica" name="economica" 
+                                   value="{{ config.profit_percentages.economica }}" step="0.1" min="0">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-0">
+                        <label for="rechazo" class="form-label">
+                            <i class="bi bi-x-circle text-danger me-1"></i>Rechazo
+                        </label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="rechazo" name="rechazo" 
+                                   value="{{ config.profit_percentages.rechazo }}" step="0.1" min="0">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Default Expenses -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-cash-coin me-2"></i>Gastos por Defecto
+                    </h5>
+                    <small class="text-muted">Valores predeterminados para nuevas pacas</small>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="transport" class="form-label">
+                            <i class="bi bi-truck text-info me-1"></i>Transporte
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="transport" name="transport" 
+                                   value="{{ config.default_expenses.transport }}" step="0.01" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="cleaning" class="form-label">
+                            <i class="bi bi-droplet text-primary me-1"></i>Limpieza
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="cleaning" name="cleaning" 
+                                   value="{{ config.default_expenses.cleaning }}" step="0.01" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-0">
+                        <label for="other" class="form-label">
+                            <i class="bi bi-three-dots text-secondary me-1"></i>Otros Gastos
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="other" name="other" 
+                                   value="{{ config.default_expenses.other }}" step="0.01" min="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-check-circle me-2"></i>Guardar Configuración
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Help Section -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <h6 class="alert-heading">
+                <i class="bi bi-info-circle me-2"></i>Ayuda
+            </h6>
+            <ul class="mb-0">
+                <li><strong>Porcentajes de Ganancia:</strong> Definen cuánto quieres ganar sobre el costo por pieza según la calidad.</li>
+                <li><strong>Gastos por Defecto:</strong> Se aplicarán automáticamente al crear nuevas pacas, pero puedes modificarlos individualmente.</li>
+                <li><strong>Cálculo de Precios:</strong> Precio de venta = (Costo por pieza + gastos adicionales) × (1 + porcentaje de ganancia/100)</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

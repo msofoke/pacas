@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}Nueva Paca - Gestión de Pacas{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2 mb-0">
+                <i class="bi bi-plus-circle text-primary me-2"></i>Nueva Paca
+            </h1>
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Volver
+            </a>
+        </div>
+    </div>
+</div>
+
+<form method="POST" id="bundleForm">
+    <div class="row">
+        <!-- Basic Information -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>Información Básica
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nombre de la Paca *</label>
+                        <input type="text" class="form-control" id="name" name="name" required 
+                               placeholder="Ej: Paca #1 - Enero 2025">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="total_cost" class="form-label">Costo Total de la Paca *</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="total_cost" name="total_cost" 
+                                   step="0.01" min="0.01" required placeholder="0.00">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-0">
+                        <label for="total_pieces" class="form-label">Número Total de Piezas *</label>
+                        <input type="number" class="form-control" id="total_pieces" name="total_pieces" 
+                               min="1" required placeholder="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Expenses -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-cash-coin me-2"></i>Gastos Adicionales
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="transport" class="form-label">
+                            <i class="bi bi-truck text-info me-1"></i>Transporte
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="transport" name="transport" 
+                                   step="0.01" min="0" value="{{ default_expenses.transport or 0 }}">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="cleaning" class="form-label">
+                            <i class="bi bi-droplet text-primary me-1"></i>Limpieza
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="cleaning" name="cleaning" 
+                                   step="0.01" min="0" value="{{ default_expenses.cleaning or 0 }}">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-0">
+                        <label for="other" class="form-label">
+                            <i class="bi bi-three-dots text-secondary me-1"></i>Otros Gastos
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="other" name="other" 
+                                   step="0.01" min="0" value="{{ default_expenses.other or 0 }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Classification by Type -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-person me-2"></i>Clasificación por Tipo
+                    </h5>
+                    <small class="text-muted">La suma debe ser igual al total de piezas</small>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="hombre" class="form-label">
+                            <i class="bi bi-person-fill text-primary me-1"></i>Hombre
+                        </label>
+                        <input type="number" class="form-control classification-type" id="hombre" name="hombre" 
+                               min="0" value="0" data-type="type">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="mujer" class="form-label">
+                            <i class="bi bi-person-dress text-danger me-1"></i>Mujer
+                        </label>
+                        <input type="number" class="form-control classification-type" id="mujer" name="mujer" 
+                               min="0" value="0" data-type="type">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="ninos" class="form-label">
+                            <i class="bi bi-person-hearts text-warning me-1"></i>Niños
+                        </label>
+                        <input type="number" class="form-control classification-type" id="ninos" name="ninos" 
+                               min="0" value="0" data-type="type">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="hogar" class="form-label">
+                            <i class="bi bi-house text-success me-1"></i>Hogar
+                        </label>
+                        <input type="number" class="form-control classification-type" id="hogar" name="hogar" 
+                               min="0" value="0" data-type="type">
+                    </div>
+                    
+                    <div class="alert alert-info mb-0">
+                        <small>
+                            <strong>Total por tipo:</strong> <span id="type-total">0</span> piezas
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Classification by Quality -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-star me-2"></i>Clasificación por Calidad
+                    </h5>
+                    <small class="text-muted">La suma debe ser igual al total de piezas</small>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="premium" class="form-label">
+                            <i class="bi bi-star-fill text-warning me-1"></i>Premium
+                        </label>
+                        <input type="number" class="form-control classification-quality" id="premium" name="premium" 
+                               min="0" value="0" data-type="quality">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="regular" class="form-label">
+                            <i class="bi bi-circle-fill text-primary me-1"></i>Regular
+                        </label>
+                        <input type="number" class="form-control classification-quality" id="regular" name="regular" 
+                               min="0" value="0" data-type="quality">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="economica" class="form-label">
+                            <i class="bi bi-circle text-success me-1"></i>Económica
+                        </label>
+                        <input type="number" class="form-control classification-quality" id="economica" name="economica" 
+                               min="0" value="0" data-type="quality">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="rechazo" class="form-label">
+                            <i class="bi bi-x-circle text-danger me-1"></i>Rechazo
+                        </label>
+                        <input type="number" class="form-control classification-quality" id="rechazo" name="rechazo" 
+                               min="0" value="0" data-type="quality">
+                    </div>
+                    
+                    <div class="alert alert-info mb-0">
+                        <small>
+                            <strong>Total por calidad:</strong> <span id="quality-total">0</span> piezas
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-lg">
+                    <i class="bi bi-x-circle me-1"></i>Cancelar
+                </a>
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-check-circle me-1"></i>Crear Paca
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Help Section -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-light">
+            <h6 class="alert-heading">
+                <i class="bi bi-lightbulb me-2"></i>Consejos
+            </h6>
+            <ul class="mb-0">
+                <li>Asegúrate de que la suma de piezas por tipo y por calidad sea igual al total de piezas.</li>
+                <li>Los gastos adicionales se distribuirán proporcionalmente entre todas las piezas.</li>
+                <li>Puedes modificar los porcentajes de ganancia en la sección de Configuración.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
