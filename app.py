@@ -18,8 +18,15 @@ db = SQLAlchemy(model_class=Base)
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-for-pacas-app")
 
-# Configure the database
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+# Database configuration
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+# Si no hay DATABASE_URL, usamos SQLite local
+if not DATABASE_URL:
+    logging.warning("DATABASE_URL no encontrada. Usando SQLite local.")
+    DATABASE_URL = "sqlite:///data.db"
+
+app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
